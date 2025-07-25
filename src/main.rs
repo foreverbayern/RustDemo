@@ -1,15 +1,35 @@
+struct User {
+    active: bool,
+    username: String,
+    email: String,
+    sign_in_count: u64,
+}
+
 fn main() {
-<<<<<<< HEAD
-    let tup = (12,13.1,true);
-    println!("value is {}",tup.2);
-=======
-    let s1 = String::from("hello");
-    let len = calculate_length(&s1);
-    println!("length is  {len}");
->>>>>>> 881be10356de2794edeceac1c11557a8ee414830
+    let s1 = String::from("hel lo");
+    let size = first_word(&s1);
+    println!("{size}");
+
+    let s = "world";
+
+
+    let user = User {
+        active: true,
+        username: String::from("小王"),
+        email: String::from("value"),
+        sign_in_count: 1,
+    };
+    println!("{0}", user.username);
+
 }
 
 
-fn calculate_length(s: &String) -> usize {
-    s.len()
+fn first_word(s: &String)-> &str {
+    let bytes = s.as_bytes();
+    for(i,&item) in bytes.iter().enumerate() {
+            if item == b' ' {
+                return &s[..i];
+            }
+    }
+    &s[..]
 }
