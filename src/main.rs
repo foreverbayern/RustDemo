@@ -1,35 +1,48 @@
-struct User {
-    active: bool,
-    username: String,
-    email: String,
-    sign_in_count: u64,
+use std::error::Error;
+use std::{env, fs, process};
+
+struct Config {
+    query: String,
+    file_path: String,
+}
+
+impl Config {
+    fn new(args: &[String]) -> Config {
+        if args.len() < 3 {
+            panic!("not enough arguments");
+        }
+
+        let query = args[1].clone();
+        let file_path = args[2].clone();
+        Config { query, file_path }
+    }
+
+    fn build(args: &[String]) -> Result<Config, &'static str> {
+        if args.len() < 3 {
+            return Err("not enough arguments");
+        }
+        Ok(Config {
+            query: args[1].clone(),
+            file_path: args[2].clone(),
+        })
+    }
 }
 
 fn main() {
-    let s1 = String::from("hel lo");
-    let size = first_word(&s1);
-    println!("{size}");
-
-    let s = "world";
-
-
-    let user = User {
-        active: true,
-        username: String::from("小王"),
-        email: String::from("value"),
-        sign_in_count: 1,
-    };
-    println!("{0}", user.username);
-
+    let args: Vec<String> = env::args().collect();
+    let config = Config::build(&args).unwrap_or_else(|err| {
+        println!("Problem parsing arguments: {err}");
+        process::exit(1);
+    });
+    if let Err(e) = run(config) {
+        println!("Application error: {e}");
+        process::exit(1);
+    }
 }
 
-
-fn first_word(s: &String)-> &str {
-    let bytes = s.as_bytes();
-    for(i,&item) in bytes.iter().enumerate() {
-            if item == b' ' {
-                return &s[..i];
-            }
-    }
-    &s[..]
+fn run(config: Config) -> Result<(), Box<dyn Error>> {
+    let contents =
+        fs::read_to_string(config.file_path)?;
+    println!("With text:\n{contents}");
+    Ok(())
 }
